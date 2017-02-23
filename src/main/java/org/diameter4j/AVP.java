@@ -18,6 +18,10 @@ public class AVP<T> {
         return value;
     }
 
+    public void setValue(T value) {
+        this.value = value;
+    }
+
     public Type<T> getType() {
         return type;
     }

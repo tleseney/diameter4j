@@ -40,8 +40,7 @@ public class DataFormatTest {
     }
 
     @Test
-    public void testAddress() throws Exception
-    {
+    public void testAddress() throws Exception {
         InetAddress addressIPv4 = InetAddress.getByName("127.0.0.1");
         buffer = Common.address.encode(buffer, addressIPv4);
         InetAddress addressIPv6 = InetAddress.getByName("[::1]");
@@ -52,6 +51,22 @@ public class DataFormatTest {
         assertEquals(addressIPv4, Common.address.decode(buffer));
         assertEquals(addressIPv6, Common.address.decode(buffer));
     }
+
+    @Test
+    public void testUnsigned32() throws Exception {
+        long l = 0xffffffffl;
+        buffer = Common.unsigned32.encode(buffer, l);
+        buffer.flip();
+
+        assertEquals(l, Common.unsigned32.decode(buffer).longValue());
+
+        ByteBuffer b = ByteBuffer.allocate(10);
+        System.out.println(b);
+
+        b.putInt(1);
+        System.out.println(b);
+    }
+
 
 
     @Test
