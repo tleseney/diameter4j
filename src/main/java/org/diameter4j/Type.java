@@ -42,4 +42,8 @@ public class Type<T> {
         this.mandatory = false;
         return this;
     }
+
+    public String toString() {
+        return name + "(" + vendorId + "/" + code + ")";
+    }
 }

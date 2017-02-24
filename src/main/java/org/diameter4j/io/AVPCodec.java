@@ -34,7 +34,9 @@ public class AVPCodec extends AbstractCodec<AVP<?>> {
         int code = buffer.getInt();
         int i = buffer.getInt();
 
+
         int flags = i >> 24 & 0xff;
+
         int length = i & 0xffffff;
 
         int dataLength = length - 8;

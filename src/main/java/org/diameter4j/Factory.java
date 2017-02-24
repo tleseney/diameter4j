@@ -7,9 +7,6 @@ import java.util.Map;
 
 public abstract class Factory {
 
-    private Factory() {
-    }
-
     private Map<Long, Type<?>> types = new HashMap<>();
 
     public static <T> Type<T> newType(String name, int vendorId, int code, DataFormat<T> dataFormat)

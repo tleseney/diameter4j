@@ -10,10 +10,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.List;
 
 import static org.diameter4j.Factory.*;
 
@@ -21,20 +19,21 @@ public abstract class Common {
 
     public static final int IETF_VENDOR_ID = 0;
 
-    public static final DataFormat<List<AVP<?>>> grouped = new DataFormat<List<AVP<?>>>("grouped") {
+    public static final DataFormat<AVPList> grouped = new DataFormat<AVPList>("grouped") {
 
         private AVPCodec avpCodec = new AVPCodec();
 
-        public List<AVP<?>> decode(ByteBuffer buffer) throws IOException {
-           List<AVP<?>> avps = new ArrayList<>();
-           while (buffer.hasRemaining()) {
+        public AVPList decode(ByteBuffer buffer) throws IOException {
+
+            AVPList avps = new AVPList();
+            while (buffer.hasRemaining()) {
               AVP<?> avp = avpCodec.decode(buffer);
               avps.add(avp);
-           }
-           return avps;
+            }
+            return avps;
         }
 
-        public ByteBuffer encode(ByteBuffer buffer, List<AVP<?>> avps) throws IOException {
+        public ByteBuffer encode(ByteBuffer buffer, AVPList avps) throws IOException {
             for (AVP<?> avp : avps) {
                 buffer = avpCodec.encode(buffer, avp);
             }
@@ -169,7 +168,7 @@ public abstract class Common {
         }
     }
 
-    public static Type<List<AVP<?>>> newGroupedType(String name, int code) {
+    public static Type<AVPList> newGroupedType(String name, int code) {
         return newType(name, code, grouped);
     }
 
@@ -405,7 +404,7 @@ public abstract class Common {
      * }
      * </pre>
      */
-    public static final Type<List<AVP<?>>> VENDOR_SPECIFIC_APPLICATION_ID = newGroupedType(
+    public static final Type<AVPList> VENDOR_SPECIFIC_APPLICATION_ID = newGroupedType(
             "Vendor-Specific-Application-Id", VENDOR_SPECIFIC_APPLICATION_ID_ORDINAL);
 
     /**
@@ -501,7 +500,7 @@ public abstract class Common {
      * applications MUST include either one Result-Code AVP or one
      * Experimental-Result AVP.
      */
-    public static final Type<List<AVP<?>>> EXPERIMENTAL_RESULT = newGroupedType(
+    public static final Type<AVPList> EXPERIMENTAL_RESULT = newGroupedType(
             "Experimental-Result", EXPERIMENTAL_RESULT_ORDINAL);
 
     /**
@@ -579,7 +578,7 @@ public abstract class Common {
      * <Failed-AVP> ::= < AVP Header: 279 >
      *               1* {AVP}
      */
-    public static final Type<List<AVP<?>>> FAILED_AVP = newGroupedType("Failed-AVP", FAILED_AVP_ORDINAL);
+    public static final Type<AVPList> FAILED_AVP = newGroupedType("Failed-AVP", FAILED_AVP_ORDINAL);
 
     /**
      * The Error-Message AVP (AVP Code 281) is of type UTF8String. It MAY accompany a Result-Code

@@ -10,12 +10,16 @@ public abstract class Message {
     protected int hopByHopId;
     protected int endToEndId;
 
-    protected List<AVP<?>> avps;
+    protected AVPList avps;
 
     public abstract boolean isRequest();
 
     public Command getCommand() {
         return command;
+    }
+
+    public <T> T getValue(Type<T> type) {
+        return avps.getValue(type);
     }
 
     public void setCommand(Command command) {
@@ -46,11 +50,11 @@ public abstract class Message {
         this.endToEndId = endToEndId;
     }
 
-    public List<AVP<?>> getAVPList() {
+    public AVPList getAVPList() {
         return avps;
     }
 
-    public void setAVPList(List<AVP<?>> avps) {
+    public void setAVPList(AVPList avps) {
         this.avps = avps;
     }
 }
