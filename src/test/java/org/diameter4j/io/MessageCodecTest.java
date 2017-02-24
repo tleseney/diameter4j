@@ -1,6 +1,7 @@
 package org.diameter4j.io;
 
 import org.diameter4j.AVPList;
+import org.diameter4j.ApplicationId;
 import org.diameter4j.Dictionary;
 import org.diameter4j.Message;
 import org.diameter4j.base.Common;
@@ -44,9 +45,9 @@ public class MessageCodecTest {
         assertEquals(Cx.SAR, message.getCommand());
         assertEquals("scscf1.home1.net.home1.net;1140221717;10;my_session", message.getValue(Common.SESSION_ID));
 
-        AVPList vsai = message.getValue(Common.VENDOR_SPECIFIC_APPLICATION_ID);
-        assertEquals(IMS.IMS_VENDOR_ID, vsai.getValue(Common.VENDOR_ID).intValue());
-        // TODO app id
+        ApplicationId appId = ApplicationId.fromMessage(message);
+        assertNotNull(appId);
+        assertEquals(Cx.CX_APPLICATION_ID, appId);
 
         assertEquals(Common.AuthSessionState.NO_STATE_MAINTAINED, message.getValue(Common.AUTH_SESSION_STATE));
         assertEquals("scscf1.home1.net", message.getValue(Common.ORIGIN_HOST));

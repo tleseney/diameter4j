@@ -1,6 +1,7 @@
 package org.diameter4j.ims;
 
 import org.diameter4j.AVPList;
+import org.diameter4j.ApplicationId;
 import org.diameter4j.Command;
 import org.diameter4j.Type;
 import org.diameter4j.base.Common;
@@ -17,6 +18,13 @@ import org.diameter4j.base.Common;
  * @see <a href="http://www.3gpp.org/ftp/Specs/html-info/29229.htm">TS 29.229</a>
  */
 public class Cx {
+
+    public static final int CX_APPLICATION = 16777216;
+
+    public static final ApplicationId CX_APPLICATION_ID = new ApplicationId(
+            ApplicationId.Type.AUTH,
+            CX_APPLICATION,
+            IMS.IMS_VENDOR_ID);
 
     //  ===========================  Diameter commands =========================
 

@@ -2,6 +2,7 @@ package org.diameter4j;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AVPList extends AbstractList<AVP<?>> {
 
@@ -12,7 +13,7 @@ public class AVPList extends AbstractList<AVP<?>> {
      */
     public <T> AVP<T> get(Type<T> type) {
         for (AVP<?> avp : avps) {
-            if (avp.getType() == type)
+            if (avp.getType() == type) // TODO equals
                 return (AVP<T>) avp;
         }
         return null;
@@ -26,6 +27,15 @@ public class AVPList extends AbstractList<AVP<?>> {
         if (avp == null)
             return null;
         return avp.getValue();
+    }
+
+    public <T> List<T> getValues(Type<T> type) {
+        List<T> values = new ArrayList<T>();
+        for (AVP<?> avp : avps) {
+            if (avp.getType() == type) // TODO equals
+                values.add((T) avp.getValue());
+        }
+        return values;
     }
 
     @Override
