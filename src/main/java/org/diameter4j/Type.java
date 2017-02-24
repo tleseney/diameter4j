@@ -38,4 +38,9 @@ public class Type<T> {
         return vendorId;
     }
 
+    public Type<T> notMandatory() {
+        this.mandatory = false;
+        return this;
+    }
+
 }
