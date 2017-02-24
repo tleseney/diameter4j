@@ -27,6 +27,14 @@ public class Dictionary {
         return types.get(id(vendorId, code));
     }
 
+    public Command getRequest(int code) {
+        return requests.get(code);
+    }
+
+    public Command getAnswer(int code) {
+        return answers.get(code);
+    }
+
     public void load(Class<?> clazz)
     {
         Field[] fields = clazz.getDeclaredFields();

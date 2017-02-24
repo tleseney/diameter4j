@@ -1,6 +1,9 @@
 package org.diameter4j.io;
 
+import org.diameter4j.Message;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +27,24 @@ public class MessageCodecTest {
     @Test
     public void testDecodeSAR() throws Exception {
 
-        ByteBuffer b = load("sar.dat");
+        Message message = new MessageCodec().decode(load("sar.dat"));
+
+        assertTrue(message.isRequest());
+    }
+
+    @Test
+    public void testDecodeMAR() throws Exception {
+
+        Message message = new MessageCodec().decode(load("mar.dat"));
+
+        assertTrue(message.isRequest());
+    }
+
+    @Test
+    public void testDecodeLIA() throws Exception {
+        Message message = new MessageCodec().decode(load("lia.dat"));
+
+        assertFalse(message.isRequest());
+
     }
 }

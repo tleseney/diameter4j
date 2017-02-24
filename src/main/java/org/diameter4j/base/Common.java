@@ -2,6 +2,7 @@ package org.diameter4j.base;
 
 import org.apache.commons.net.ntp.TimeStamp;
 import org.diameter4j.*;
+import org.diameter4j.io.AVPCodec;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -22,15 +23,21 @@ public abstract class Common {
 
     public static final DataFormat<List<AVP<?>>> grouped = new DataFormat<List<AVP<?>>>("grouped") {
 
+        private AVPCodec avpCodec = new AVPCodec();
+
         public List<AVP<?>> decode(ByteBuffer buffer) throws IOException {
            List<AVP<?>> avps = new ArrayList<>();
            while (buffer.hasRemaining()) {
-              // TODO
+              AVP<?> avp = avpCodec.decode(buffer);
+              avps.add(avp);
            }
            return avps;
         }
 
-        public ByteBuffer encode(ByteBuffer buffer, List<AVP<?>> value) throws IOException {
+        public ByteBuffer encode(ByteBuffer buffer, List<AVP<?>> avps) throws IOException {
+            for (AVP<?> avp : avps) {
+                buffer = avpCodec.encode(buffer, avp);
+            }
             return buffer;
         }
     };
