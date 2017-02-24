@@ -18,7 +18,6 @@ import static org.diameter4j.Factory.*;
 
 public abstract class Common {
 
-
     public static final int IETF_VENDOR_ID = 0;
 
     public static final DataFormat<List<AVP<?>>> grouped = new DataFormat<List<AVP<?>>>("grouped") {
