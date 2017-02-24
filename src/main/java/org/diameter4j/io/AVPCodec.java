@@ -2,7 +2,9 @@ package org.diameter4j.io;
 
 import org.diameter4j.AVP;
 import org.diameter4j.Dictionary;
+import org.diameter4j.Factory;
 import org.diameter4j.Type;
+import org.diameter4j.base.Common;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -52,7 +54,7 @@ public class AVPCodec extends AbstractCodec<AVP<?>> {
         Type<?> type = Dictionary.getInstance().getType(vendorId, code);
 
         if (type == null)
-            ; // TODO
+            type = Factory.newType("Unknown", vendorId, code, Common.octetString);
 
         AVP avp = new AVP(type);
         // TODO flags

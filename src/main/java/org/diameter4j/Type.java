@@ -42,5 +42,4 @@ public class Type<T> {
         this.mandatory = false;
         return this;
     }
-
 }

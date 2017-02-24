@@ -1,9 +1,7 @@
 package org.diameter4j.base;
 
 import org.apache.commons.net.ntp.TimeStamp;
-import org.diameter4j.AVP;
-import org.diameter4j.DataFormat;
-import org.diameter4j.Type;
+import org.diameter4j.*;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -19,6 +17,7 @@ import java.util.List;
 import static org.diameter4j.Factory.*;
 
 public abstract class Common {
+
 
     public static final int IETF_VENDOR_ID = 0;
 
@@ -600,6 +599,30 @@ public abstract class Common {
     public static final Type<String> ERROR_REPORTING_HOST_AVP =
             newUTF8StringType("Error-Reporting-Host", ERROR_REPORTING_HOST).notMandatory();
 
+
+    /**
+     * The Supported-Vendor-Id AVP (AVP Code 265) is of type Unsigned32 and
+     * contains the IANA "SMI Network Management Private Enterprise Codes"
+     * [ASSIGNNO] value assigned to a vendor other than the device vendor.
+     * This is used in the CER and CEA messages in order to inform the peer
+     * that the sender supports (a subset of) the vendor-specific AVPs
+     * defined by the vendor identified in this AVP.
+     */
+    public static final Type<Long> SUPPORTED_VENDOR_ID = newUnsigned32Type("Supported-Vendor-Id", SUPPORTED_VENDOR_ID_ORDINAL);
+
+    /**
+     * One or more of instances of this AVP MUST be present if the answer
+     * message's 'E' bit is set and the Result-Code AVP is set to
+     * DIAMETER_REDIRECT_INDICATION.
+     *
+     * Upon receiving the above, the receiving Diameter node SHOULD forward
+     * the request directly to one of the hosts identified in these AVPs.
+     * The server contained in the selected Redirect-Host AVP SHOULD be used
+     * for all messages pertaining to this session.
+     */
+    public static final Type<String> REDIRECT_HOST = newUTF8StringType("Redirect-Host", REDIRECT_HOST_ORDINAL);
+
+
     // Radius for digest authentication (RFC 4590)
     public static final int
             DIGEST_REALM_ORDINAL = 104,
@@ -684,4 +707,139 @@ public abstract class Common {
     public static final Type<String> DIGEST_HA1 = newUTF8StringType("Digest-HA1", DIGEST_HA1_ORDINAL);
 
 
+
+    // ======================== Commands ========================
+
+    public static final int
+            CER_ORDINAL = 257,
+            CEA_ORDINAL = 257,
+            DWR_ORDINAL = 280,
+            DWA_ORDINAL = 280,
+            DPR_ORDINAL = 282,
+            DPA_ORDINAL = 282;
+
+    /**
+     * The Capabilities-Exchange-Request (CER), indicated by the Command-
+     * Code set to 257 and the Command Flags' 'R' bit set, is sent to
+     * exchange local capabilities.  Upon detection of a transport failure,
+     * this message MUST NOT be sent to an alternate peer.
+     *
+     * When Diameter is run over SCTP [SCTP], which allows for connections
+     * to span multiple interfaces and multiple IP addresses, the
+     * Capabilities-Exchange-Request message MUST contain one Host-IP-
+     * Address AVP for each potential IP address that MAY be locally used
+     * when transmitting Diameter messages.
+     * <pre>
+     * {@code
+     *  <CER> ::= < Diameter Header: 257, REQ >
+     *           { Origin-Host }
+     *           { Origin-Realm }
+     *        1* { Host-IP-Address }
+     *           { Vendor-Id }
+     *           { Product-Name }
+     *           [ Origin-State-Id ]
+     *         * [ Supported-Vendor-Id ]
+     *         * [ Auth-Application-Id ]
+     *         * [ Inband-Security-Id ]
+     *         * [ Acct-Application-Id ]
+     *         * [ Vendor-Specific-Application-Id ]
+     *           [ Firmware-Revision ]
+     *         * [ AVP ]
+     *  }
+     *  </pre>
+     */
+    public static final Command CER = newCommand(true, CER_ORDINAL, "Capabilities-Exchange-Request", false);
+
+    /**
+     *  The Capabilities-Exchange-Answer (CEA), indicated by the Command-Code
+     * set to 257 and the Command Flags' 'R' bit cleared, is sent in
+     * response to a CER message.
+     *
+     * When Diameter is run over SCTP [SCTP], which allows connections to
+     * span multiple interfaces, hence, multiple IP addresses, the
+     * Capabilities-Exchange-Answer message MUST contain one Host-IP-Address
+     * AVP for each potential IP address that MAY be locally used when
+     * transmitting Diameter messages.
+     *
+     * Message Format
+     * <pre>
+     * {@code
+     *  <CEA> ::= < Diameter Header: 257 >
+     *          { Result-Code }
+     *          { Origin-Host }
+     *          { Origin-Realm }
+     *       1* { Host-IP-Address }
+     *          { Vendor-Id }
+     *          { Product-Name }
+     *          [ Origin-State-Id ]
+     *          [ Error-Message ]
+     *        * [ Failed-AVP ]
+     *        * [ Supported-Vendor-Id ]
+     *        * [ Auth-Application-Id ]
+     *        * [ Inband-Security-Id ]
+     *        * [ Acct-Application-Id ]
+     *        * [ Vendor-Specific-Application-Id ]
+     *          [ Firmware-Revision ]
+     *        * [ AVP ]
+     *  }
+     *  </pre>
+     */
+    public static final Command CEA = newAnswer(CEA_ORDINAL, "Capabilities-Exchange-Answer");
+
+    /**
+     * <pre> {@code
+     * 	<DWR>  ::= < Diameter Header: 280, REQ >
+     * 		{ Origin-Host }
+     * 		{ Origin-Realm }
+     * 		[ Origin-State-Id ]
+     * } </pre>
+     *
+     * @see Common#ORIGIN_HOST
+     * @see Common#ORIGIN_REALM
+     * @see Common#ORIGIN_STATE_ID
+     */
+    public static final Command DWR = newRequest(DWR_ORDINAL, "Device-Watchdog-Request");
+
+    /**
+     * <pre> {@code
+     * <DWA>  ::= < Diameter Header: 280 >
+     *           { Result-Code }
+     *           { Origin-Host }
+     *           { Origin-Realm }
+     *           [ Error-Message ]
+     *         * [ Failed-AVP ]
+     *           [ Original-State-Id ]
+     * } </pre>
+     */
+    public static final Command DWA = newAnswer(DWA_ORDINAL, "Device-Watchdog-Answer");
+
+    /**
+     * The Disconnect-Peer-Request (DPR), indicated by the Command-Code set
+     * to 282 and the Command Flags' 'R' bit set, is sent to a peer to
+     * inform its intentions to shutdown the transport connection.  Upon
+     * detection of a transport failure, this message MUST NOT be sent to an
+     * alternate peer.
+     *
+     * <pre> {@code
+     * <DPR> ::= < Diameter Header: 282, REQ >
+     *            { Origin-Host }
+     *            { Origin-Realm }
+     *            { Disconnect-Cause }
+     * } </pre>
+     */
+    public static final Command DPR = newRequest(DPR_ORDINAL, "Disconnect-Peer-Request");
+
+    /**
+     * Upon receipt of this message, the transport connection is shutdown.
+     *
+     * <pre> {@code
+     * <DPA>  ::= < Diameter Header: 282 >
+     *            { Result-Code }
+     *            { Origin-Host }
+     *            { Origin-Realm }
+     *            [ Error-Message ]
+     *          * [ Failed-AVP ]
+     * } </pre>
+     */
+    public static final Command DPA = newAnswer(DPA_ORDINAL, "Disconnect-Peer-Answer");
 }
