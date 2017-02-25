@@ -79,6 +79,11 @@ public class ApplicationId {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type, vendors);
+    }
+
     public static ApplicationId fromMessage(Message message) {
         Long appId = message.getValue(Common.ACCT_APPLICATION_ID);
         if (appId != null)
