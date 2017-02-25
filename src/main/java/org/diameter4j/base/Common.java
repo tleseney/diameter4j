@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.diameter4j.Factory.*;
 
@@ -165,6 +167,32 @@ public abstract class Common {
 
         public ByteBuffer encode(ByteBuffer buffer, E value) throws IOException {
             return unsigned32.encode(buffer, (long) (value.ordinal() + offset));
+        }
+    }
+
+    public interface CustomEnumOrdinal {
+        long getOrdinal();
+    }
+
+    public static class CustomEnumDataFormat<E extends Enum<E> & CustomEnumOrdinal> extends DataFormat<E> {
+
+        private Map<Long, E> enums = new HashMap<>();
+
+        public CustomEnumDataFormat(Class<E> clazz) {
+            super("Enumerated: " + clazz.getSimpleName());
+            EnumSet<E> values = EnumSet.allOf(clazz);
+
+            for (E e : values) {
+                enums.put(e.getOrdinal(), e);
+            }
+        }
+
+        public E decode(ByteBuffer buffer) throws IOException {
+            return enums.get(Common.unsigned32.decode(buffer));
+        }
+
+        public ByteBuffer encode(ByteBuffer buffer, E value) throws IOException {
+            return Common.unsigned32.encode(buffer, value.getOrdinal());
         }
     }
 
